@@ -309,7 +309,9 @@
 
     <div id="aiResult" class="result hidden"></div>
 </section>
-    </main>
+   </main>
+
+<script>
 document.getElementById("generateButton").addEventListener("click", async function () {
     const button = this;
     const resultBox = document.getElementById("aiResult");
@@ -364,36 +366,28 @@ document.getElementById("generateButton").addEventListener("click", async functi
         button.textContent = "Generate with AI";
     }
 });
-    
-        const form = document.getElementById("eventForm");
 
-        form.addEventListener("submit", function (event) {
-            event.preventDefault();
+document.getElementById("eventForm").addEventListener("submit", function (event) {
+    event.preventDefault();
 
-            const eventName =
-                document.getElementById("eventName").value.trim();
-            const eventDate =
-                document.getElementById("eventDate").value;
-            const venue =
-                document.getElementById("venue").value.trim();
-            const audience =
-                document.getElementById("audience").value.trim();
-            const registration =
-                document.getElementById("registration").value.trim();
+    const eventName = document.getElementById("eventName").value.trim();
+    const eventDate = document.getElementById("eventDate").value;
+    const venue = document.getElementById("venue").value.trim();
+    const audience = document.getElementById("audience").value.trim();
+    const registration = document.getElementById("registration").value.trim();
 
-            document.getElementById("eventStatus").textContent =
-                "Event details entered successfully!";
+    document.getElementById("eventStatus").textContent =
+        "Event details entered successfully!";
+    document.getElementById("eventStatus").classList.remove("hidden");
 
-            document.getElementById("eventStatus")
-                .classList.remove("hidden");
+    document.getElementById("calendarPreview").textContent =
+        "Event: " + eventName +
+        "\nDate: " + eventDate +
+        "\nVenue: " + venue +
+        "\nAudience: " + (audience || "Not specified") +
+        "\nRegistration: " + (registration || "Not provided");
+});
+</script>
 
-            document.getElementById("calendarPreview").textContent =
-                "Event: " + eventName +
-                "\nDate: " + eventDate +
-                "\nVenue: " + venue +
-                "\nAudience: " + (audience || "Not specified") +
-                "\nRegistration: " + (registration || "Not provided");
-        });
-    </script>
 </body>
 </html>

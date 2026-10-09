@@ -8,7 +8,6 @@ load_dotenv()
 app = Flask(__name__)
 
 api_key = os.getenv("GEMINI_API_KEY")
-
 client = genai.Client(api_key=api_key) if api_key else None
 
 
@@ -34,11 +33,14 @@ def generate():
 
     data = request.get_json(silent=True) or {}
 
-    event_name = data.get("eventName", "").strip()
-    event_date = data.get("eventDate", "").strip()
-    venue = data.get("venue", "").strip()
-    audience = data.get("audience", "General audience").strip()
-    details = data.get("details", "").strip()
+    event_name = str(data.get("eventName", "")).strip()
+    event_date = str(data.get("eventDate", "")).strip()
+    venue = str(data.get("venue", "")).strip()
+    audience = str(
+        data.get("audience") or "General audience"
+    ).strip()
+    registration = str(data.get("registration", "")).strip()
+    details = str(data.get("details", "")).strip()
     message_type = data.get("type", "captions")
 
     if not event_name or not event_date or not venue:
@@ -47,13 +49,41 @@ def generate():
         }), 400
 
     prompts = {
-        "captions": "Create 3 engaging social media captions and 1 short WhatsApp invitation.",
-        "email": "Write a professional event invitation email with a subject line and body.",
-        "faq": "Create 8 useful event FAQs and answers. If a fact is not provided, say it is not specified instead of inventing it."
+        "captions": (
+            "Create 3 engaging social media captions and "
+            "1 short WhatsApp invitation."
+        ),
+        "email": """
+Write a professional, polished event invitation email ready to send.
+
+Include:
+1. A clear subject line.
+2. A polite greeting to the target audience.
+3. An engaging opening invitation.
+4. A short paragraph explaining the event.
+5. An easy-to-read event details section containing the event name, date, venue, and target audience.
+6. The registration link only if one was provided.
+7. A clear call to action.
+8. A professional closing signed by the TOBOFU Event Organizing Team.
+
+Rules:
+- Use natural, professional English.
+- Keep the email between 150 and 220 words.
+- Avoid unnecessary repetition.
+- Never invent prizes, fees, speakers, deadlines, or other missing facts.
+- Mark important missing details as not specified when necessary.
+- Output only the subject line and email.
+""",
+        "faq": (
+            "Create 8 useful event FAQs and answers. "
+            "If a fact is not provided, say it is not specified."
+        )
     }
 
     if message_type not in prompts:
-        return jsonify({"error": "Unsupported generator type."}), 400
+        return jsonify({
+            "error": "Unsupported generator type."
+        }), 400
 
     prompt = f"""
 You are TOBOFU, an AI event communication assistant.
@@ -66,24 +96,30 @@ Event name: {event_name}
 Date: {event_date}
 Venue: {venue}
 Target audience: {audience}
-Additional details: {details}
+Registration link: {registration or "Not provided"}
+Additional details: {details or "Not provided"}
 
 Task: {prompts[message_type]}
+
 Use clear, polished formatting.
 """
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-3.5-flash-lite",
             contents=prompt
         )
 
-        return jsonify({"result": response.text or "No text was generated."})
+        generated_text = response.text
 
-    except Exception:
+        return jsonify({
+            "result": generated_text or "No text was generated."
+        })
+
+    except Exception as e:
         app.logger.exception("Gemini generation failed")
         return jsonify({
-            "error": "AI generation failed. Check your API access, model availability, quota, and internet connection."
+            "error": str(e)
         }), 502
 
 
