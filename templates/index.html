@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOBOFU | Event AI Studio</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #20243a;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 20px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e7ef;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            color: #6254e8;
+        }
+
+        header span {
+            color: #747990;
+            font-size: 14px;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .welcome {
+            margin-bottom: 25px;
+        }
+
+        .welcome h1 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .welcome p {
+            color: #747990;
+            line-height: 1.6;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid #e7e9f2;
+            box-shadow: 0 5px 20px #20243a08;
+        }
+
+        .card h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .description {
+            color: #777d91;
+            font-size: 14px;
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 15px 0 8px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dfe2ed;
+            border-radius: 9px;
+            font-size: 14px;
+            background: #fff;
+        }
+
+        textarea {
+            min-height: 85px;
+            resize: vertical;
+        }
+
+        button {
+            border: none;
+            background: #6254e8;
+            color: white;
+            padding: 13px 18px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 18px;
+        }
+
+        button:hover {
+            background: #4e41cf;
+        }
+
+        .full {
+            width: 100%;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .feature {
+            border: 1px solid #e7e9f2;
+            padding: 18px;
+            border-radius: 12px;
+            background: #fafaff;
+        }
+
+        .feature .emoji {
+            font-size: 25px;
+            margin-bottom: 12px;
+        }
+
+        .feature h3 {
+            font-size: 15px;
+            margin-bottom: 7px;
+        }
+
+        .feature p {
+            color: #777d91;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .calendar {
+            margin-top: 22px;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 16px;
+            background: #f7f6ff;
+            border-radius: 10px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            line-height: 1.6;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 700px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome h1 {
+                font-size: 25px;
+            }
+
+            header {
+                padding: 18px 5%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">TOBOFU ✦</div>
+        <span>AI Event Studio</span>
+    </header>
+
+    <main>
+        <section class="welcome">
+            <h1>Plan events. Create impact. ✨</h1>
+            <p>
+                Generate event communications, answer questions,
+                and organize reminders from one dashboard.
+            </p>
+        </section>
+
+        <div class="layout">
+            <section class="card">
+                <h2>📝 Event Details</h2>
+                <p class="description">
+                    Enter your event information to get started.
+                </p>
+
+                <form id="eventForm">
+                    <label for="eventName">Event Name *</label>
+                    <input id="eventName" required
+                           placeholder="e.g. College AI Hackathon">
+
+                    <label for="eventDate">Event Date *</label>
+                    <input id="eventDate" type="date" required>
+
+                    <label for="venue">Venue *</label>
+                    <input id="venue" required
+                           placeholder="e.g. College Auditorium">
+
+                    <label for="audience">Target Audience</label>
+                    <input id="audience"
+                           placeholder="e.g. College students">
+
+                    <label for="registration">Registration Link</label>
+                    <input id="registration" type="url"
+                           placeholder="https://example.com">
+
+                    <label for="details">Additional Details</label>
+                    <textarea id="details"
+                        placeholder="Eligibility, timings, prizes..."></textarea>
+
+                    <button class="full" type="submit">
+                        Save Event Details
+                    </button>
+                </form>
+
+                <div id="eventStatus" class="result hidden"></div>
+            </section>
+
+            <section class="card">
+                <h2>⚡ AI Communication Studio</h2>
+                <p class="description">
+                    Your event information will power these tools.
+                </p>
+
+                <div class="feature-grid">
+                    <div class="feature">
+                        <div class="emoji">📱</div>
+                        <h3>Social & WhatsApp</h3>
+                        <p>Create captions and promotional messages.</p>
+                    </div>
+
+                    <div class="feature">
+                        <div class="emoji">📧</div>
+                        <h3>Email Generator</h3>
+                        <p>Draft professional invitations and updates.</p>
+                    </div>
+
+                    <div class="feature">
+                        <div class="emoji">❓</div>
+                        <h3>FAQ Generator</h3>
+                        <p>Prepare answers to common event questions.</p>
+                    </div>
+
+                    <div class="feature">
+                        <div class="emoji">🗓️</div>
+                        <h3>Reminder Calendar</h3>
+                        <p>Plan registration and event-day reminders.</p>
+                    </div>
+                </div>
+
+                <p class="description" style="margin-top:18px; margin-bottom:0;">
+                    These are dashboard previews. We will connect each
+                    feature to the backend in the next steps.
+                </p>
+            </section>
+        </div>
+
+        <section class="card calendar">
+            <h2>🗓️ Upcoming Event</h2>
+            <p class="description">
+                Your saved event will appear here.
+            </p>
+            <div id="calendarPreview" class="result">
+                No event saved yet.
+            </div>
+        </section>
+        <section class="card calendar">
+    <h2>✨ Generate Event Communications</h2>
+    <p class="description">
+        Choose what you want AI to create from your event details.
+    </p>
+
+    <label for="generatorType">Choose a generator</label>
+    <select id="generatorType">
+        <option value="captions">Social captions & WhatsApp</option>
+        <option value="email">Professional email</option>
+        <option value="faq">Frequently asked questions (FAQ)</option>
+    </select>
+
+    <button class="full" id="generateButton" type="button">
+        Generate with AI
+    </button>
+
+    <div id="aiResult" class="result hidden"></div>
+</section>
+    </main>
+document.getElementById("generateButton").addEventListener("click", async function () {
+    const button = this;
+    const resultBox = document.getElementById("aiResult");
+
+    const eventName = document.getElementById("eventName").value.trim();
+    const eventDate = document.getElementById("eventDate").value;
+    const venue = document.getElementById("venue").value.trim();
+    const audience = document.getElementById("audience").value.trim();
+    const registration = document.getElementById("registration").value.trim();
+    const details = document.getElementById("details").value.trim();
+    const type = document.getElementById("generatorType").value;
+
+    if (!eventName || !eventDate || !venue) {
+        resultBox.textContent = "Please enter the event name, date, and venue first.";
+        resultBox.classList.remove("hidden");
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Generating...";
+    resultBox.textContent = "Please wait while AI creates your content...";
+    resultBox.classList.remove("hidden");
+
+    try {
+        const response = await fetch("/generate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                eventName,
+                eventDate,
+                venue,
+                audience,
+                registration,
+                details,
+                type
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Generation failed.");
+        }
+
+        resultBox.textContent = data.result || "No content returned.";
+    } catch (error) {
+        resultBox.textContent = "Error: " + error.message;
+    } finally {
+        button.disabled = false;
+        button.textContent = "Generate with AI";
+    }
+});
+    
+        const form = document.getElementById("eventForm");
+
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const eventName =
+                document.getElementById("eventName").value.trim();
+            const eventDate =
+                document.getElementById("eventDate").value;
+            const venue =
+                document.getElementById("venue").value.trim();
+            const audience =
+                document.getElementById("audience").value.trim();
+            const registration =
+                document.getElementById("registration").value.trim();
+
+            document.getElementById("eventStatus").textContent =
+                "Event details entered successfully!";
+
+            document.getElementById("eventStatus")
+                .classList.remove("hidden");
+
+            document.getElementById("calendarPreview").textContent =
+                "Event: " + eventName +
+                "\nDate: " + eventDate +
+                "\nVenue: " + venue +
+                "\nAudience: " + (audience || "Not specified") +
+                "\nRegistration: " + (registration || "Not provided");
+        });
+    </script>
+</body>
+</html>
