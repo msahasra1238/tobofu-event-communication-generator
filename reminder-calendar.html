@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tobofu Track - Reminder Calendar</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f1f5f9;
+  color: #1e293b;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+}
+
+header {
+  background: #155e75;
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.card {
+  background: white;
+  padding: 18px;
+  margin-top: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #0001;
+}
+
+input, textarea, button {
+  font: inherit;
+  box-sizing: border-box;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 11px;
+  margin: 7px 0 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+}
+
+button {
+  padding: 10px 13px;
+  background: #0e7490;
+  color: white;
+  border: 0;
+  border-radius: 7px;
+  cursor: pointer;
+  margin: 3px;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.day, .weekday {
+  text-align: center;
+  padding: 8px 2px;
+}
+
+.day {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  min-height: 40px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.day.today {
+  border: 2px solid #0e7490;
+}
+
+.day.selected {
+  background: #cffafe;
+}
+
+.dot {
+  display: block;
+  color: #0e7490;
+  font-size: 11px;
+}
+
+.reminder {
+  background: #ecfeff;
+  border-left: 4px solid #0e7490;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 6px;
+  overflow-wrap: anywhere;
+}
+
+.done {
+  opacity: 0.6;
+}
+
+.done strong {
+  text-decoration: line-through;
+}
+
+.delete {
+  background: #b91c1c;
+}
+
+.complete {
+  background: #15803d;
+}
+
+@media (max-width: 420px) {
+  body { padding: 10px; }
+  .card { padding: 10px; }
+  .day, .weekday { font-size: 12px; }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+  <h1>📅 Tobofu Track</h1>
+  <p>Reminder Calendar</p>
+  <p>Plan your events. Never miss a deadline!</p>
+</header>
+
+<section class="card">
+  <h2>Add a Reminder</h2>
+
+  <form id="form">
+    <label for="title">Event Name</label>
+    <input id="title" required maxlength="100"
+      placeholder="Example: AI Hackathon">
+
+    <label for="date">Date</label>
+    <input id="date" type="date" required>
+
+    <label for="time">Time</label>
+    <input id="time" type="time" required>
+
+    <label for="message">Reminder Message</label>
+    <textarea id="message" maxlength="500"
+      placeholder="Enter your reminder message"></textarea>
+
+    <button type="submit">+ Add Reminder</button>
+  </form>
+</section>
+
+<section class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:5px">
+    <button id="prev" type="button">← Previous</button>
+    <h3 id="month"></h3>
+    <button id="next" type="button">Next →</button>
+  </div>
+
+  <div class="days" id="weekdays"></div>
+  <div class="days" id="calendar"></div>
+  <p>Select a date to see its reminders.</p>
+</section>
+
+<section class="card">
+  <h2 id="listTitle">All Reminders</h2>
+  <button id="all" type="button">Show All</button>
+  <div id="list"></div>
+</section>
+
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const KEY = "tobofu_calendar_reminders";
+
+let reminders = [];
+try {
+  const saved = JSON.parse(localStorage.getItem(KEY) || "[]");
+  if (Array.isArray(saved)) reminders = saved;
+} catch (e) {
+  reminders = [];
+}
+
+let view = new Date();
+let selected = "";
+
+function key(y, m, d) {
+  return y + "-" + String(m + 1).padStart(2, "0") +
+    "-" + String(d).padStart(2, "0");
+}
+
+function safe(value) {
+  return String(value).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;",
+    '"': "&quot;", "'": "&#39;"
+  })[c]);
+}
+
+function save() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(reminders));
+  } catch (e) {
+    alert("Unable to save reminders in this browser.");
+  }
+}
+
+function drawCalendar() {
+  const y = view.getFullYear();
+  const m = view.getMonth();
+
+  $("month").textContent = view.toLocaleDateString("en-IN", {
+    month: "long", year: "numeric"
+  });
+
+  $("weekdays").innerHTML =
+    ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    .map(d => `<div class="weekday"><b>${d}</b></div>`)
+    .join("");
+
+  const offset = new Date(y, m, 1).getDay();
+  const total = new Date(y, m + 1, 0).getDate();
+
+  const now = new Date();
+  const today = key(now.getFullYear(), now.getMonth(), now.getDate());
+
+  let html = "";
+
+  for (let i = 0; i < offset; i++) {
+    html += "<div></div>";
+  }
+
+  for (let d = 1; d <= total; d++) {
+    const date = key(y, m, d);
+    const count = reminders.filter(r => r.date === date).length;
+
+    const cls = [
+      "day",
+      date === today ? "today" : "",
+      date === selected ? "selected" : ""
+    ].filter(Boolean).join(" ");
+
+    html += `<div class="${cls}" data-date="${date}">
+      ${d}
+      ${count ? `<span class="dot">${count} reminder(s)</span>` : ""}
+    </div>`;
+  }
+
+  $("calendar").innerHTML = html;
+
+  document.querySelectorAll("[data-date]").forEach(cell => {
+    cell.addEventListener("click", () => {
+      selected = cell.dataset.date;
+      $("date").value = selected;
+      drawCalendar();
+      drawList();
+    });
+  });
+}
+
+function drawList() {
+  const items = reminders
+    .filter(r => !selected || r.date === selected)
+    .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+
+  $("listTitle").textContent =
+    selected ? "Reminders for " + selected : "All Reminders";
+
+  if (!items.length) {
+    $("list").innerHTML = "<p>No reminders found. Add one above!</p>";
+    return;
+  }
+
+  $("list").innerHTML = items.map(r => `
+    <div class="reminder ${r.done ? "done" : ""}">
+      <strong>${safe(r.title)}</strong>
+      <p>📅 ${safe(r.date)} | ⏰ ${safe(r.time)}</p>
+      ${r.message ? `<p>${safe(r.message)}</p>` : ""}
+      <button class="complete" data-action="toggle"
+        data-id="${safe(r.id)}">
+        ${r.done ? "Undo" : "Mark Complete"}
+      </button>
+      <button class="delete" data-action="delete"
+        data-id="${safe(r.id)}">Delete</button>
+    </div>
+  `).join("");
+
+  $("list").querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.id;
+
+      if (btn.dataset.action === "toggle") {
+        reminders = reminders.map(r =>
+          r.id === id ? {...r, done: !r.done} : r
+        );
+      } else {
+        reminders = reminders.filter(r => r.id !== id);
+      }
+
+      save();
+      drawCalendar();
+      drawList();
+    });
+  });
+}
+
+$("form").addEventListener("submit", e => {
+  e.preventDefault();
+
+  const title = $("title").value.trim();
+  const date = $("date").value;
+  const time = $("time").value;
+
+  if (!title || !date || !time) {
+    alert("Please enter the event name, date and time.");
+    return;
+  }
+
+  reminders.push({
+    id: Date.now().toString() + Math.random().toString(36).slice(2),
+    title,
+    date,
+    time,
+    message: $("message").value.trim(),
+    done: false
+  });
+
+  save();
+  selected = date;
+  view = new Date(date + "T12:00:00");
+  $("form").reset();
+  $("date").value = date;
+
+  drawCalendar();
+  drawList();
+  alert("Reminder added successfully!");
+});
+
+$("prev").addEventListener("click", () => {
+  view.setDate(1);
+  view.setMonth(view.getMonth() - 1);
+  drawCalendar();
+});
+
+$("next").addEventListener("click", () => {
+  view.setDate(1);
+  view.setMonth(view.getMonth() + 1);
+  drawCalendar();
+});
+
+$("all").addEventListener("click", () => {
+  selected = "";
+  drawCalendar();
+  drawList();
+});
+
+drawCalendar();
+drawList();
+</script>
+</body>
+</html>
