@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TOBOFU | Event Communication Studio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="#"><span class="brand-icon">T</span> TOBOFU</a>
+    <p class="nav-label">WORKSPACE</p>
+    <button class="nav active" data-page="dashboard">▦ &nbsp; Dashboard</button>
+    <button class="nav" data-page="create">＋ &nbsp; Create event</button>
+    <button class="nav" data-page="content">✧ &nbsp; Message studio</button>
+    <button class="nav" data-page="faqs">? &nbsp; FAQs</button>
+    <button class="nav" data-page="emails">✉ &nbsp; Email generator</button>
+    <button class="nav" data-page="calendar">▦ &nbsp; Reminder calendar</button>
+    <div class="sidebar-bottom">
+      <div class="avatar">T</div>
+      <div><strong>TOBOFU Studio</strong><small>Event workspace</small></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div><span class="eyebrow">EVENT COMMUNICATION, SIMPLIFIED</span><h1 id="page-title">Your event workspace</h1></div>
+      <button class="primary" id="new-event-btn">＋ New event</button>
+    </header>
+
+    <section class="hero">
+      <div>
+        <span class="hero-tag">✦ YOUR AI EVENT ASSISTANT</span>
+        <h2>One event. Every message.</h2>
+        <p>Create captions, WhatsApp messages, FAQs and emails from one place.</p>
+        <button class="hero-button" id="hero-create">Create your first event →</button>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="art-card art-one">✉ <span>Email ready</span></div>
+        <div class="art-card art-two">✦ <span>Caption created</span></div>
+        <div class="art-center">T</div>
+        <div class="art-card art-three">✓ <span>Event organized</span></div>
+      </div>
+    </section>
+
+    <section class="stats">
+      <article class="stat-card"><span>EVENTS CREATED</span><strong id="event-count">0</strong><small>Saved in this browser</small></article>
+      <article class="stat-card"><span>CONTENT TYPES</span><strong>5</strong><small>One connected workspace</small></article>
+      <article class="stat-card"><span>UPCOMING EVENTS</span><strong id="upcoming-count">0</strong><small>Based on event dates</small></article>
+    </section>
+
+    <section class="workspace-grid">
+      <article class="panel event-panel" id="event-panel">
+        <div class="panel-heading"><div><span class="eyebrow">GET STARTED</span><h3>Create an event</h3></div><span class="step-pill">STEP 01</span></div>
+        <form id="event-form">
+          <label>Event name *<input id="event-name" required placeholder="e.g. Campus AI Hackathon"></label>
+          <label>Event description *<textarea id="event-description" required rows="3" placeholder="What is the event about?"></textarea></label>
+          <div class="two-col">
+            <label>Event date *<input id="event-date" type="date" required></label>
+            <label>Event time<input id="event-time" type="time"></label>
+          </div>
+          <label>Venue<input id="event-venue" placeholder="e.g. Main auditorium"></label>
+          <label>Target audience<input id="event-audience" placeholder="e.g. College students"></label>
+          <label>Registration deadline<input id="event-deadline" type="date"></label>
+          <label>Registration link<input id="event-link" type="url" placeholder="https://example.com/register"></label>
+          <button class="primary full" type="submit">Save event & create content →</button>
+        </form>
+      </article>
+
+      <div class="right-column">
+        <article class="panel">
+          <div class="panel-heading"><div><span class="eyebrow">CONTENT ENGINE</span><h3>Communication studio</h3></div><span class="sparkle">✦</span></div>
+          <p class="muted">Choose a format to create event-ready content using your saved event details.</p>
+          <div class="tool-grid">
+            <button class="tool" data-type="caption"><span class="tool-icon purple">✧</span><strong>Social captions</strong><small>Promotional posts</small></button>
+            <button class="tool" data-type="whatsapp"><span class="tool-icon green">◉</span><strong>WhatsApp</strong><small>Invitations & reminders</small></button>
+            <button class="tool" data-type="announcement"><span class="tool-icon orange">↗</span><strong>Announcements</strong><small>Event updates</small></button>
+            <button class="tool" data-type="faq"><span class="tool-icon blue">?</span><strong>FAQs</strong><small>Common questions</small></button>
+            <button class="tool" data-type="email"><span class="tool-icon pink">✉</span><strong>Email writer</strong><small>Professional emails</small></button>
+            <button class="tool" data-type="reminder"><span class="tool-icon yellow">◷</span><strong>Reminders</strong><small>Upcoming deadlines</small></button>
+          </div>
+        </article>
+        <article class="panel upcoming-panel">
+          <div class="panel-heading"><div><span class="eyebrow">YOUR SCHEDULE</span><h3>Upcoming events</h3></div><button class="text-button" id="view-calendar">View calendar →</button></div>
+          <div id="upcoming-list" class="upcoming-list"><p class="empty">Your saved events will appear here.</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel results-panel" id="results-panel">
+      <div class="panel-heading"><div><span class="eyebrow">YOUR GENERATED CONTENT</span><h3 id="result-title">Message studio</h3></div><span class="demo-tag">DEMO MODE</span></div>
+      <p class="muted" id="result-description">Save an event, then select a content type above to preview the result.</p>
+      <div id="results" class="results"><div class="empty large">✦<br> Your content will appear here.</div></div>
+    </section>
+
+    <section class="panel calendar-panel" id="calendar-panel">
+      <div class="panel-heading"><div><span class="eyebrow">PLAN AHEAD</span><h3>Reminder calendar</h3></div><span class="step-pill">SCHEDULE</span></div>
+      <p class="muted">Your event dates and registration deadlines are saved locally in this demo.</p>
+      <div id="calendar-list" class="calendar-list"><p class="empty">Save an event to add dates to your schedule.</p></div>
+    </section>
+
+    <footer>TOBOFU <span>·</span> Make every event easier to communicate.</footer>
+  </main>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="script.js"></script>
+</body>
+</html>
