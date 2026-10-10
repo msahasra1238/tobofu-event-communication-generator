@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOBOFU Event Templates</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6ff;
+  margin: 0;
+  padding: 20px;
+  color: #20243a;
+}
+h1, h2 { text-align: center; }
+.container {
+  max-width: 850px;
+  margin: auto;
+}
+.card {
+  background: white;
+  padding: 20px;
+  margin: 18px 0;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px #0001;
+}
+input, textarea, select, button {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  margin: 7px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+button {
+  background: #5546d9;
+  color: white;
+  border: 0;
+  cursor: pointer;
+  font-weight: bold;
+}
+#poster {
+  background: linear-gradient(135deg, #5546d9, #d94f9d);
+  color: white;
+  text-align: center;
+  padding: 35px 15px;
+  border-radius: 12px;
+  overflow-wrap: anywhere;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>TOBOFU Event Templates</h1>
+<p style="text-align:center">Create event captions and posters easily!</p>
+
+<div class="card">
+<h2>Caption Generator</h2>
+<input id="eventName" placeholder="Event name">
+<select id="eventType">
+<option>College Fest</option>
+<option>Hackathon</option>
+<option>Workshop</option>
+<option>Seminar</option>
+<option>Cultural Event</option>
+</select>
+<input id="eventDate" placeholder="Event date">
+<input id="eventVenue" placeholder="Venue">
+<textarea id="eventDetails" placeholder="Describe your event"></textarea>
+<button onclick="makeCaption()">Generate Caption</button>
+<textarea id="caption" placeholder="Your caption will appear here"></textarea>
+<button onclick="copyCaption()">Copy Caption</button>
+</div>
+
+<div class="card">
+<h2>Poster Preview</h2>
+<div id="poster">
+<h1 id="pName">YOUR EVENT NAME</h1>
+<h3 id="pType">College Fest</h3>
+<p id="pDate">Event date</p>
+<p id="pVenue">Venue</p>
+<p id="pDetails">Your event description</p>
+</div>
+<button onclick="updatePoster()">Update Poster</button>
+<button onclick="downloadPoster()">Download Poster PNG</button>
+</div>
+</div>
+
+<script>
+function makeCaption() {
+  const name = document.getElementById('eventName').value || 'Our Event';
+  const type = document.getElementById('eventType').value;
+  const date = document.getElementById('eventDate').value || 'coming soon';
+  const venue = document.getElementById('eventVenue').value || 'venue to be announced';
+  const details = document.getElementById('eventDetails').value;
+  document.getElementById('caption').value =
+    `🎉 Join us for ${name}!\\nCategory: ${type}\\n📅 Date: ${date}\\n📍 Venue: ${venue}\\n${details}\\nDon't miss it! #Event #TOBOFU`;
+  updatePoster();
+}
+function copyCaption() {
+  const box = document.getElementById('caption');
+  if (!box.value) {
+    alert('Please generate a caption first.');
+    return;
+  }
+  navigator.clipboard.writeText(box.value)
+    .then(() => alert('Caption copied!'))
+    .catch(() => alert('Please select and copy the caption manually.'));
+}
+function updatePoster() {
+  document.getElementById('pName').textContent =
+    document.getElementById('eventName').value || 'YOUR EVENT NAME';
+  document.getElementById('pType').textContent =
+    document.getElementById('eventType').value;
+  document.getElementById('pDate').textContent =
+    document.getElementById('eventDate').value || 'Event date';
+  document.getElementById('pVenue').textContent =
+    document.getElementById('eventVenue').value || 'Venue';
+  document.getElementById('pDetails').textContent =
+    document.getElementById('eventDetails').value || 'Your event description';
+}
+function downloadPoster() {
+  alert('Poster download feature needs an HTML-to-image library. We can add it in the next step.');
+}
+</script>
+</body>
+</html>
