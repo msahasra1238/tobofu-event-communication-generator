@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#17132f">
+<title>TOBOFU | Reminder Calendar</title>
+
+<style>
+:root {
+  --accent: #8b5cf6;
+  --accent-dark: #6d3ee8;
+  --bg: #100e20;
+  --panel: rgba(29,25,53,.92);
+  --field: #191630;
+  --text: #f7f5ff;
+  --muted: #b7b1d1;
+  --border: rgba(193,178,255,.2);
+  --shadow: 0 18px 50px rgba(0,0,0,.2);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 22px 15px 40px;
+  min-height: 100vh;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(ellipse at 10% 0%, #35215f 0%, transparent 38%),
+    radial-gradient(ellipse at 95% 40%, #172d59 0%, transparent 35%),
+    var(--bg);
+}
+
+button, input, textarea { font: inherit; }
+
+.page { max-width: 950px; margin: auto; }
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 27px;
+}
+
+.brand { display: flex; align-items: center; gap: 12px; }
+
+.logo {
+  width: 47px;
+  height: 47px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  background: linear-gradient(135deg, var(--accent), #3978e9);
+  color: white;
+  font-size: 25px;
+  box-shadow: 0 8px 28px rgba(139,92,246,.25);
+}
+
+.brand-name { font-size: 22px; font-weight: 850; letter-spacing: 2px; }
+.brand-tagline { color: var(--muted); font-size: 12px; margin-top: 4px; }
+
+.top-actions { display: flex; flex-wrap: wrap; gap: 9px; }
+
+.nav-link, .settings-button {
+  display: inline-block;
+  padding: 11px 14px;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.nav-link:hover, .settings-button:hover { border-color: var(--accent); }
+
+.hero { padding: 18px 0 12px; }
+
+.eyebrow {
+  display: inline-block;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: 25px;
+  color: #d9caff;
+  background: rgba(139,92,246,.12);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+h1 {
+  margin: 17px 0 10px;
+  font-size: clamp(30px, 5vw, 43px);
+  letter-spacing: -1px;
+}
+
+.gradient-text {
+  color: #c5a8ff;
+  background: linear-gradient(90deg, #c4a5ff, #80c8ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.description, .muted {
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.card {
+  margin-top: 19px;
+  padding: clamp(17px, 4vw, 27px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+}
+
+.card h2 { margin-top: 0; font-size: 20px; }
+
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 18px;
+}
+
+.heading-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(139,92,246,.18);
+  font-size: 21px;
+  flex-shrink: 0;
+}
+
+.heading h2 { margin: 0; }
+.heading p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+
+label { display: block; margin: 15px 0 7px; font-weight: 700; font-size: 13px; }
+
+input, textarea {
+  width: 100%;
+  padding: 12px 13px;
+  margin-bottom: 5px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--field);
+  color: var(--text);
+  outline: none;
+}
+
+input:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(139,92,246,.15);
+}
+
+input::placeholder, textarea::placeholder { color: #918aa9; }
+input[type="date"], input[type="time"] { color-scheme: dark; }
+
+textarea { min-height: 90px; resize: vertical; line-height: 1.6; }
+
+button {
+  padding: 10px 13px;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(100deg, var(--accent-dark), var(--accent));
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter .2s, transform .2s;
+}
+
+button:hover { filter: brightness(1.12); }
+button:active { transform: scale(.98); }
+button:disabled { opacity: .6; cursor: not-allowed; }
+
+.button-wide { width: 100%; margin-top: 13px; padding: 13px; }
+.button-secondary { background: rgba(255,255,255,.07); border: 1px solid var(--border); }
+.delete { background: #b91c1c; }
+.complete { background: #087f5b; }
+
+.status {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.notice {
+  padding: 13px;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  background: rgba(139,92,246,.08);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.settings-panel {
+  padding: 18px;
+  margin-bottom: 18px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--panel);
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+input[type="color"] { height: 43px; padding: 4px; cursor: pointer; }
+
+.calendar-nav {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 17px;
+}
+
+.calendar-nav h3 { text-align: center; margin: 0; font-size: 17px; }
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.weekday { text-align: center; padding: 8px 1px; color: var(--muted); font-size: 12px; }
+
+.day {
+  min-width: 0;
+  min-height: 58px;
+  padding: 8px 2px;
+  text-align: center;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: rgba(255,255,255,.025);
+  cursor: pointer;
+  color: var(--text);
+}
+
+.day:hover { border-color: var(--accent); }
+.day.today { border: 2px solid var(--accent); }
+.day.selected { background: rgba(139,92,246,.24); }
+.day.empty { border-color: transparent; background: transparent; cursor: default; }
+
+.dot { display: block; margin-top: 5px; color: #c4a5ff; font-size: 10px; }
+
+.reminder {
+  padding: 14px;
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 12px;
+  background: rgba(139,92,246,.07);
+  overflow-wrap: anywhere;
+}
+
+.reminder strong { font-size: 15px; }
+.reminder p { color: var(--muted); font-size: 13px; line-height: 1.6; }
+
+.done { opacity: .6; }
+.done strong { text-decoration: line-through; }
+
+.reminder button { margin: 4px 5px 0 0; font-size: 12px; }
+
+.hidden { display: none !important; }
+
+.footer { text-align: center; margin-top: 28px; color: var(--muted); font-size: 12px; line-height: 1.8; }
+
+body.light {
+  --bg: #f3f4fb;
+  --panel: rgba(255,255,255,.94);
+  --field: #fff;
+  --text: #25203b;
+  --muted: #68647c;
+  --border: rgba(80,65,125,.17);
+  --shadow: 0 18px 45px rgba(48,37,91,.08);
+  background:
+    radial-gradient(ellipse at 10% 0%, #e2d7ff 0%, transparent 38%),
+    radial-gradient(ellipse at 95% 40%, #dbeafe 0%, transparent 35%),
+    var(--bg);
+}
+
+body.light .eyebrow { color: #5e36a8; }
+body.light input[type="date"], body.light input[type="time"] { color-scheme: light; }
+
+@media (max-width: 560px) {
+  body { padding: 14px 10px 28px; }
+  .topbar { align-items: flex-start; }
+  .top-actions { width: 100%; }
+  .nav-link, .settings-button { flex: 1; text-align: center; }
+  .settings-grid { grid-template-columns: 1fr; }
+  .day { min-height: 45px; font-size: 12px; }
+  .weekday { font-size: 11px; }
+  .calendar-nav { gap: 5px; }
+  .calendar-nav button { padding: 9px 7px; font-size: 12px; }
+}
+</style>
+</head>
+
+<body>
+<div class="page">
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo" aria-label="TOBOFU logo">✦</div>
+    <div>
+      <div class="brand-name">TOBOFU</div>
+      <div class="brand-tagline">AI-powered event communication</div>
+    </div>
+  </div>
+  <div class="top-actions">
+    <a class="nav-link" href="/">← Back to Home</a>
+    <button class="settings-button" id="settingsToggle" type="button"
+      aria-expanded="false" aria-controls="settingsPanel">⚙️ Settings</button>
+  </div>
+</header>
+
+<section id="settingsPanel" class="settings-panel hidden">
+  <h2>⚙️ Personalise your workspace</h2>
+  <p class="muted">Your theme and accent colour are saved in this browser.</p>
+  <div class="settings-grid">
+    <div>
+      <label for="themeChoice">Appearance</label>
+      <select id="themeChoice">
+        <option value="dark">Midnight Dark</option>
+        <option value="light">Light & Clean</option>
+      </select>
+    </div>
+    <div>
+      <label for="accentChoice">Accent colour</label>
+      <input type="color" id="accentChoice" value="#8b5cf6">
+    </div>
+  </div>
+  <button class="button-secondary button-wide" id="resetSettings" type="button">Reset Appearance</button>
+</section>
+
+<section class="hero">
+  <span class="eyebrow">✦ STAY ORGANISED WITH TOBOFU</span>
+  <h1>Your events.<br><span class="gradient-text">Always on schedule.</span></h1>
+  <p class="description">Manage important dates, set reminders, and get browser alerts when your reminders are due.</p>
+</section>
+
+<section class="card">
+  <div class="heading">
+    <div class="heading-icon">🔔</div>
+    <div>
+      <h2>Browser Notifications</h2>
+      <p>Enable alerts for reminders while this page is open.</p>
+    </div>
+  </div>
+  <button id="enableNotifications" type="button">Enable Notifications</button>
+  <p id="notificationStatus" class="status" aria-live="polite">Checking notification support...</p>
+  <div class="notice">
+    <strong>Note:</strong> Browser permission is required. This version checks reminders while the calendar page is open and cannot reliably notify you after you close it.
+  </div>
+</section>
+
+<section class="card">
+  <div class="heading">
+    <div class="heading-icon">➕</div>
+    <div>
+      <h2>Add a Reminder</h2>
+      <p>Create a reminder for an event or important deadline.</p>
+    </div>
+  </div>
+  <form id="form">
+    <label for="title">Event Name</label>
+    <input id="title" required maxlength="100" placeholder="Example: AI Hackathon">
+
+    <label for="date">Date</label>
+    <input id="date" type="date" required>
+
+    <label for="time">Time</label>
+    <input id="time" type="time" required>
+
+    <label for="message">Reminder Message</label>
+    <textarea id="message" maxlength="500" placeholder="Enter your reminder message"></textarea>
+
+    <button class="button-wide" type="submit">＋ Add Reminder</button>
+  </form>
+</section>
+
+<section class="card">
+  <div class="heading">
+    <div class="heading-icon">🗓️</div>
+    <div>
+      <h2>Reminder Calendar</h2>
+      <p>Select a date to view reminders scheduled for that day.</p>
+    </div>
+  </div>
+  <div class="calendar-nav">
+    <button id="prev" class="button-secondary" type="button">← Previous</button>
+    <h3 id="month"></h3>
+    <button id="next" class="button-secondary" type="button">Next →</button>
+  </div>
+  <div class="days" id="weekdays"></div>
+  <div class="days" id="calendar"></div>
+  <p class="muted">Outlined date = today. Highlighted date = selected.</p>
+</section>
+
+<section class="card">
+  <div class="heading">
+    <div class="heading-icon">📌</div>
+    <div>
+      <h2 id="listTitle">All Reminders</h2>
+      <p>Mark completed reminders or remove ones you no longer need.</p>
+    </div>
+  </div>
+  <button id="all" class="button-secondary" type="button">Show All Reminders</button>
+  <div id="list" aria-live="polite"></div>
+</section>
+
+<footer class="footer">
+  <strong>TOBOFU</strong> · Smarter communication for better events
+  <br>Built for the Tri-City AI-Thon
+</footer>
+</div>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+const KEY = "tobofu_calendar_reminders";
+const SENT_KEY = "tobofu_calendar_notifications_sent";
+
+let reminders = [];
+try {
+  const saved = JSON.parse(localStorage.getItem(KEY) || "[]");
+  if (Array.isArray(saved)) reminders = saved;
+} catch (error) {
+  reminders = [];
+}
+
+let sentNotifications = new Set();
+try {
+  const savedSent = JSON.parse(localStorage.getItem(SENT_KEY) || "[]");
+  if (Array.isArray(savedSent)) sentNotifications = new Set(savedSent);
+} catch (error) {
+  sentNotifications = new Set();
+}
+
+let view = new Date();
+let selected = "";
+
+function dateKey(y, m, d) {
+  return y + "-" + String(m + 1).padStart(2, "0") +
+    "-" + String(d).padStart(2, "0");
+}
+
+function safe(value) {
+  return String(value).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;",
+    '"': "&quot;", "'": "&#39;"
+  })[c]);
+}
+
+function save() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(reminders));
+  } catch (error) {
+    alert("Unable to save reminders in this browser.");
+  }
+}
+
+function saveSentNotifications() {
+  try {
+    localStorage.setItem(SENT_KEY, JSON.stringify([...sentNotifications]));
+  } catch (error) {
+    console.error("Could not save notification history.", error);
+  }
+}
+
+function updateNotificationStatus(message) {
+  $("notificationStatus").textContent = message;
+}
+
+function updateNotificationUI() {
+  if (!("Notification" in window)) {
+    updateNotificationStatus("This browser does not support notifications.");
+    $("enableNotifications").disabled = true;
+    return;
+  }
+
+  if (Notification.permission === "granted") {
+    updateNotificationStatus("Notifications are enabled. Keep this page open for reminder checks.");
+    $("enableNotifications").textContent = "Notifications Enabled";
+  } else if (Notification.permission === "denied") {
+    updateNotificationStatus("Notifications are blocked. Allow them in your browser's site settings.");
+    $("enableNotifications").textContent = "Notifications Blocked";
+  } else {
+    updateNotificationStatus("Notifications are not enabled yet. Click the button to allow them.");
+    $("enableNotifications").textContent = "Enable Notifications";
+  }
+}
+
+$("enableNotifications").addEventListener("click", async () => {
+  if (!("Notification" in window)) {
+    updateNotificationStatus("Your browser does not support notifications.");
+    return;
+  }
+
+  if (Notification.permission === "granted") {
+    updateNotificationStatus("Notifications are already enabled. Keep this page open.");
+    checkReminders();
+    return;
+  }
+
+  if (Notification.permission === "denied") {
+    updateNotificationStatus("Permission is blocked. Open browser site settings and allow notifications.");
+    return;
+  }
+
+  try {
+    const permission = await Notification.requestPermission();
+    updateNotificationUI();
+
+    if (permission === "granted") {
+      new Notification("TOBOFU Notifications Enabled", {
+        body: "You'll receive reminder alerts while this calendar is open."
+      });
+      checkReminders();
+    }
+  } catch (error) {
+    updateNotificationStatus("Could not request notification permission in this browser.");
+  }
+});
+
+function drawCalendar() {
+  const y = view.getFullYear();
+  const m = view.getMonth();
+
+  $("month").textContent = view.toLocaleDateString("en-IN", {
+    month: "long", year: "numeric"
+  });
+
+  $("weekdays").innerHTML = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    .map(d => `<div class="weekday"><b>${d}</b></div>`).join("");
+
+  const offset = new Date(y, m, 1).getDay();
+  const total = new Date(y, m + 1, 0).getDate();
+  const now = new Date();
+  const today = dateKey(now.getFullYear(), now.getMonth(), now.getDate());
+
+  let html = "";
+  for (let i = 0; i < offset; i++) html += '<div class="day empty"></div>';
+
+  for (let d = 1; d <= total; d++) {
+    const date = dateKey(y, m, d);
+    const count = reminders.filter(r => r.date === date).length;
+    const classes = [
+      "day",
+      date === today ? "today" : "",
+      date === selected ? "selected" : ""
+    ].filter(Boolean).join(" ");
+
+    html += `<div class="${classes}" data-date="${date}">
+      ${d}${count ? `<span class="dot">${count} reminder(s)</span>` : ""}
+    </div>`;
+  }
+
+  $("calendar").innerHTML = html;
+
+  document.querySelectorAll("[data-date]").forEach(cell => {
+    cell.addEventListener("click", () => {
+      selected = cell.dataset.date;
+      $("date").value = selected;
+      drawCalendar();
+      drawList();
+    });
+  });
+}
+
+function drawList() {
+  const items = reminders
+    .filter(r => !selected || r.date === selected)
+    .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+
+  $("listTitle").textContent = selected ? "Reminders for " + selected : "All Reminders";
+
+  if (!items.length) {
+    $("list").innerHTML = '<p class="muted">No reminders found. Add one above!</p>';
+    return;
+  }
+
+  $("list").innerHTML = items.map(r => `
+    <div class="reminder ${r.done ? "done" : ""}">
+      <strong>${safe(r.title)}</strong>
+      <p>📅 ${safe(r.date)} &nbsp; | &nbsp; ⏰ ${safe(r.time)}</p>
+      ${r.message ? `<p>${safe(r.message)}</p>` : ""}
+      <button class="complete" data-action="toggle" data-id="${safe(r.id)}">
+        ${r.done ? "Undo Complete" : "✓ Mark Complete"}
+      </button>
+      <button class="delete" data-action="delete" data-id="${safe(r.id)}">Delete</button>
+    </div>
+  `).join("");
+
+  $("list").querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.id;
+
+      if (btn.dataset.action === "toggle") {
+        reminders = reminders.map(r => r.id === id ? {...r, done: !r.done} : r);
+      } else {
+        reminders = reminders.filter(r => r.id !== id);
+      }
+
+      save();
+      drawCalendar();
+      drawList();
+    });
+  });
+}
+
+function checkReminders() {
+  if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+  const now = new Date();
+
+  reminders.forEach(r => {
+    if (r.done || !r.date || !r.time) return;
+
+    const reminderTime = new Date(`${r.date}T${r.time}:00`);
+    if (Number.isNaN(reminderTime.getTime()) || reminderTime > now) return;
+
+    const notificationId = String(r.id);
+    if (sentNotifications.has(notificationId)) return;
+
+    try {
+      const notification = new Notification("TOBOFU Reminder: " + r.title, {
+        body: r.message || `Your event is scheduled for ${r.date} at ${r.time}.`,
+        tag: "tobofu-" + notificationId
+      });
+
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+      };
+
+      sentNotifications.add(notificationId);
+      saveSentNotifications();
+    } catch (error) {
+      console.error("Notification could not be shown.", error);
+    }
+  });
+}
+
+$("form").addEventListener("submit", e => {
+  e.preventDefault();
+
+  const title = $("title").value.trim();
+  const date = $("date").value;
+  const time = $("time").value;
+
+  if (!title || !date || !time) {
+    alert("Please enter the event name, date and time.");
+    return;
+  }
+
+  const id = Date.now().toString() + Math.random().toString(36).slice(2);
+
+  reminders.push({
+    id,
+    title,
+    date,
+    time,
+    message: $("message").value.trim(),
+    done: false
+  });
+
+  save();
+  selected = date;
+  view = new Date(date + "T12:00:00");
+  $("form").reset();
+  $("date").value = date;
+
+  drawCalendar();
+  drawList();
+  checkReminders();
+  alert("Reminder added successfully!");
+});
+
+$("prev").addEventListener("click", () => {
+  view.setDate(1);
+  view.setMonth(view.getMonth() - 1);
+  drawCalendar();
+});
+
+$("next").addEventListener("click", () => {
+  view.setDate(1);
+  view.setMonth(view.getMonth() + 1);
+  drawCalendar();
+});
+
+$("all").addEventListener("click", () => {
+  selected = "";
+  drawCalendar();
+  drawList();
+});
+
+// Keep appearance settings consistent across both TOBOFU pages.
+const settingsToggle = $("settingsToggle");
+const settingsPanel = $("settingsPanel");
+const themeChoice = $("themeChoice");
+const accentChoice = $("accentChoice");
+
+function applySettings(theme, accent) {
+  document.body.classList.toggle("light", theme === "light");
+  document.documentElement.style.setProperty("--accent", accent);
+  document.documentElement.style.setProperty("--accent-dark", accent);
+  themeChoice.value = theme;
+  accentChoice.value = accent;
+
+  try {
+    localStorage.setItem("tobofu_theme", theme);
+    localStorage.setItem("tobofu_accent", accent);
+  } catch (error) {
+    // The page remains usable without local storage.
+  }
+}
+
+try {
+  applySettings(
+    localStorage.getItem("tobofu_theme") || "dark",
+    localStorage.getItem("tobofu_accent") || "#8b5cf6"
+  );
+} catch (error) {
+  applySettings("dark", "#8b5cf6");
+}
+
+settingsToggle.addEventListener("click", () => {
+  const opening = settingsPanel.classList.contains("hidden");
+  settingsPanel.classList.toggle("hidden", !opening);
+  settingsToggle.setAttribute("aria-expanded", String(opening));
+});
+
+themeChoice.addEventListener("change", () => {
+  applySettings(themeChoice.value, accentChoice.value);
+});
+
+accentChoice.addEventListener("input", () => {
+  applySettings(themeChoice.value, accentChoice.value);
+});
+
+$("resetSettings").addEventListener("click", () => applySettings("dark", "#8b5cf6"));
+
+drawCalendar();
+drawList();
+updateNotificationUI();
+checkReminders();
+
+// Reminder checks run only while this page is open.
+setInterval(checkReminders, 15000);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) checkReminders();
+});
+</script>
+</body>
+</html>

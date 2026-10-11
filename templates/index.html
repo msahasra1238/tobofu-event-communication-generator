@@ -1,393 +1,571 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TOBOFU | Event AI Studio</title>
+    <title>TOBOFU | Event Communication Generator</title>
 
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; }
 
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
-            background: #f4f6fb;
-            color: #20243a;
+            background: #100d20;
+            color: #f7f4ff;
+            min-height: 100vh;
         }
 
         header {
-            background: #ffffff;
-            padding: 20px 6%;
+            padding: 22px 7%;
+            background: #19142e;
+            border-bottom: 1px solid #383052;
+        }
+
+        .header-top {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #e5e7ef;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        .logo {
-            font-size: 25px;
-            font-weight: bold;
-            color: #6254e8;
+        header h1 {
+            margin: 0;
+            color: #c7a8ff;
+            font-size: 28px;
         }
 
-        header span {
-            color: #747990;
+        header p {
+            margin: 6px 0 0;
+            color: #c4bdd8;
+        }
+
+        nav {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            background: #34294f;
+            border: 1px solid #51466f;
+            padding: 10px 14px;
+            border-radius: 8px;
             font-size: 14px;
+        }
+
+        nav a:hover {
+            background: #4a386e;
         }
 
         main {
-            max-width: 1100px;
-            margin: 35px auto;
-            padding: 0 20px;
-        }
-
-        .welcome {
-            margin-bottom: 25px;
-        }
-
-        .welcome h1 {
-            font-size: 30px;
-            margin-bottom: 10px;
-        }
-
-        .welcome p {
-            color: #747990;
-            line-height: 1.6;
-        }
-
-        .layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 22px;
+            width: min(1050px, 92%);
+            margin: 30px auto;
         }
 
         .card {
-            background: white;
-            padding: 25px;
+            background: #1c1732;
+            border: 1px solid #393052;
             border-radius: 16px;
-            border: 1px solid #e7e9f2;
-            box-shadow: 0 5px 20px #20243a08;
+            padding: 25px;
+            margin-bottom: 22px;
         }
 
-        .card h2 {
-            font-size: 20px;
-            margin-bottom: 8px;
+        h2 {
+            margin-top: 0;
+            color: #d6c2ff;
         }
 
         .description {
-            color: #777d91;
-            font-size: 14px;
-            margin-bottom: 22px;
-            line-height: 1.5;
+            color: #c4bdd8;
+            line-height: 1.6;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
         }
 
         label {
-            display: block;
             font-size: 14px;
             font-weight: bold;
-            margin: 15px 0 8px;
+            color: #e5dcff;
         }
 
-        input, textarea, select {
+        input, select, textarea {
             width: 100%;
             padding: 12px;
-            border: 1px solid #dfe2ed;
+            border: 1px solid #51466f;
             border-radius: 9px;
-            font-size: 14px;
-            background: #fff;
+            background: #100d20;
+            color: #ffffff;
+            font: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: 2px solid #a879ff;
+            border-color: #a879ff;
         }
 
         textarea {
-            min-height: 85px;
+            min-height: 110px;
             resize: vertical;
         }
 
+        .hint {
+            color: #b7accd;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
         button {
-            border: none;
-            background: #6254e8;
-            color: white;
-            padding: 13px 18px;
+            border: 0;
             border-radius: 9px;
-            cursor: pointer;
+            padding: 13px 18px;
             font-weight: bold;
             font-size: 14px;
-            margin-top: 18px;
+            cursor: pointer;
+            transition: 0.2s;
         }
 
-        button:hover {
-            background: #4e41cf;
+        button:hover { opacity: 0.9; }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: wait;
         }
 
-        .full {
-            width: 100%;
+        .primary {
+            background: #9b6bff;
+            color: #ffffff;
         }
+
+        .secondary {
+            background: #34294f;
+            border: 1px solid #625080;
+            color: #ffffff;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        #aiResult {
+            min-height: 180px;
+            padding: 18px;
+            background: #100d20;
+            border: 1px solid #393052;
+            border-radius: 10px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            line-height: 1.7;
+        }
+
+        #statusMessage {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #28213d;
+            color: #e7ddff;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .hidden { display: none !important; }
 
         .feature-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
         }
 
-        .feature {
-            border: 1px solid #e7e9f2;
+        .feature-link {
+            display: block;
             padding: 18px;
             border-radius: 12px;
-            background: #fafaff;
+            border: 1px solid #51466f;
+            background: #171229;
+            text-decoration: none;
+            color: #f7f4ff;
         }
 
-        .feature .emoji {
-            font-size: 25px;
-            margin-bottom: 12px;
+        .feature-link strong {
+            display: block;
+            color: #d6c2ff;
+            margin-bottom: 8px;
         }
 
-        .feature h3 {
-            font-size: 15px;
-            margin-bottom: 7px;
-        }
-
-        .feature p {
-            color: #777d91;
+        .feature-link span {
+            color: #c4bdd8;
             font-size: 13px;
             line-height: 1.5;
         }
 
-        .calendar {
-            margin-top: 22px;
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #a99fbe;
+            font-size: 13px;
         }
 
-        .result {
-            margin-top: 20px;
-            padding: 16px;
-            background: #f7f6ff;
-            border-radius: 10px;
-            white-space: pre-wrap;
-            overflow-wrap: anywhere;
-            line-height: 1.6;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        @media (max-width: 700px) {
-            .layout {
+        @media (max-width: 650px) {
+            .form-grid, .feature-grid {
                 grid-template-columns: 1fr;
             }
 
-            .welcome h1 {
-                font-size: 25px;
-            }
+            .full-width { grid-column: auto; }
 
-            header {
-                padding: 18px 5%;
-            }
+            .card { padding: 18px; }
+
+            header h1 { font-size: 23px; }
         }
     </style>
 </head>
 
 <body>
     <header>
-        <div class="logo">TOBOFU ✦</div>
-        <span>AI Event Studio</span>
+        <div class="header-top">
+            <div>
+                <h1>TOBOFU</h1>
+                <p>AI-Powered Event Communication Generator</p>
+            </div>
+        </div>
+
+        <nav aria-label="Main navigation">
+            <a href="/">🏠 Home</a>
+            <a href="/calendar">📅 Calendar &amp; Reminders</a>
+            <a href="/notifications">🔔 Notifications</a>
+        </nav>
     </header>
 
     <main>
-        <section class="welcome">
-            <h1>Plan events. Create impact. ✨</h1>
-            <p>
-                Generate event communications, answer questions,
-                and organize reminders from one dashboard.
+        <section class="card">
+            <h2>Welcome to TOBOFU</h2>
+            <p class="description">
+                Manage event communication, generate messages with AI,
+                and send event notifications by email from one place.
             </p>
+
+            <div class="feature-grid">
+                <a class="feature-link" href="#eventForm">
+                    <strong>✨ AI Generator</strong>
+                    <span>Create event invitations, captions and FAQs.</span>
+                </a>
+
+                <a class="feature-link" href="/calendar">
+                    <strong>📅 Calendar</strong>
+                    <span>Open your existing calendar and reminders page.</span>
+                </a>
+
+                <a class="feature-link" href="/notifications">
+                    <strong>🔔 Notifications</strong>
+                    <span>View the email notification history recorded by the backend.</span>
+                </a>
+            </div>
         </section>
 
-        <div class="layout">
-            <section class="card">
-                <h2>📝 Event Details</h2>
-                <p class="description">
-                    Enter your event information to get started.
-                </p>
+        <section class="card" id="eventFormSection">
+            <h2>Event Details</h2>
+            <p class="description">
+                Enter your event details, generate communication content with AI,
+                and send it to your intended email recipient.
+            </p>
 
-                <form id="eventForm">
-                    <label for="eventName">Event Name *</label>
-                    <input id="eventName" required
-                           placeholder="e.g. College AI Hackathon">
-
-                    <label for="eventDate">Event Date *</label>
-                    <input id="eventDate" type="date" required>
-
-                    <label for="venue">Venue *</label>
-                    <input id="venue" required
-                           placeholder="e.g. College Auditorium">
-
-                    <label for="audience">Target Audience</label>
-                    <input id="audience"
-                           placeholder="e.g. College students">
-
-                    <label for="registration">Registration Link</label>
-                    <input id="registration" type="url"
-                           placeholder="https://example.com">
-
-                    <label for="details">Additional Details</label>
-                    <textarea id="details"
-                        placeholder="Eligibility, timings, prizes..."></textarea>
-
-                    <button class="full" type="submit">
-                        Save Event Details
-                    </button>
-                </form>
-
-                <div id="eventStatus" class="result hidden"></div>
-            </section>
-
-            <section class="card">
-                <h2>⚡ AI Communication Studio</h2>
-                <p class="description">
-                    Your event information will power these tools.
-                </p>
-
-                <div class="feature-grid">
-                    <div class="feature">
-                        <div class="emoji">📱</div>
-                        <h3>Social & WhatsApp</h3>
-                        <p>Create captions and promotional messages.</p>
+            <form id="eventForm">
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="eventName">Event Name *</label>
+                        <input type="text" id="eventName"
+                               placeholder="e.g. Tri-City AI-Thon" required>
                     </div>
 
-                    <div class="feature">
-                        <div class="emoji">📧</div>
-                        <h3>Email Generator</h3>
-                        <p>Draft professional invitations and updates.</p>
+                    <div class="field">
+                        <label for="eventDate">Event Date *</label>
+                        <input type="date" id="eventDate" required>
                     </div>
 
-                    <div class="feature">
-                        <div class="emoji">❓</div>
-                        <h3>FAQ Generator</h3>
-                        <p>Prepare answers to common event questions.</p>
+                    <div class="field">
+                        <label for="venue">Venue *</label>
+                        <input type="text" id="venue"
+                               placeholder="Enter event venue" required>
                     </div>
 
-                    <div class="feature">
-                        <div class="emoji">🗓️</div>
-                        <h3>Reminder Calendar</h3>
-                        <p>Plan registration and event-day reminders.</p>
+                    <div class="field">
+                        <label for="audience">Target Audience</label>
+                        <input type="text" id="audience"
+                               placeholder="e.g. Students, developers">
+                    </div>
+
+                    <div class="field full-width">
+                        <label for="registration">Registration Link</label>
+                        <input type="url" id="registration"
+                               placeholder="https://example.com/register">
+                    </div>
+
+                    <div class="field full-width">
+                        <label for="details">Additional Event Details</label>
+                        <textarea id="details"
+                            placeholder="Describe the event, activities, timings, benefits and deadlines."></textarea>
                     </div>
                 </div>
 
-                <p class="description" style="margin-top:18px; margin-bottom:0;">
-                    These are dashboard previews. We will connect each
-                    feature to the backend in the next steps.
-                </p>
-            </section>
-        </div>
+                <div class="field" style="margin-top: 24px;">
+                    <label for="generatorType">What would you like to create?</label>
+                    <select id="generatorType">
+                        <option value="captions">Social Media Captions and Invitation</option>
+                        <option value="whatsapp">WhatsApp Announcement</option>
+                        <option value="email">Professional Invitation Email</option>
+                        <option value="faq">Frequently Asked Questions (FAQ)</option>
+                    </select>
+                </div>
 
-        <section class="card calendar">
-            <h2>🗓️ Upcoming Event</h2>
+                <div class="field" style="margin-top: 20px;">
+                    <label for="deliveryChannel">Send notification through</label>
+                    <select id="deliveryChannel">
+                        <option value="email">Email</option>
+                        <option value="whatsapp">WhatsApp (API setup required)</option>
+                    </select>
+                </div>
+
+                <div id="emailRecipientGroup" class="field" style="margin-top: 18px;">
+                    <label for="recipientEmail">Recipient Email Address *</label>
+                    <input type="email" id="recipientEmail"
+                           placeholder="Enter recipient email address">
+                    <span class="hint">
+                        Until your Resend domain is verified, use your own
+                        verified email address for testing.
+                    </span>
+                </div>
+
+                <div id="whatsappRecipientGroup"
+                     class="field hidden" style="margin-top: 18px;">
+                    <label for="recipientPhone">Recipient WhatsApp Number *</label>
+                    <input type="tel" id="recipientPhone"
+                           placeholder="e.g. +919876543210">
+                    <span class="hint">
+                        WhatsApp sending still requires official WhatsApp Business
+                        Cloud API credentials and recipient consent.
+                    </span>
+                </div>
+
+                <div class="button-row">
+                    <button type="submit" class="primary" id="generateButton">
+                        ✨ Generate and Send
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section class="card">
+            <h2>Generated Communication</h2>
             <p class="description">
-                Your saved event will appear here.
+                Your generated content appears below. It stays visible if
+                email delivery fails.
             </p>
-            <div id="calendarPreview" class="result">
-                No event saved yet.
+
+            <div id="aiResult">Your AI-generated content will appear here.</div>
+
+            <div class="button-row">
+                <button type="button" class="secondary" id="copyButton">
+                    Copy Content
+                </button>
+            </div>
+
+            <div id="statusMessage" role="status" aria-live="polite">
+                Ready. Enter the event details to begin.
             </div>
         </section>
-        <section class="card calendar">
-    <h2>✨ Generate Event Communications</h2>
-    <p class="description">
-        Choose what you want AI to create from your event details.
-    </p>
+    </main>
 
-    <label for="generatorType">Choose a generator</label>
-    <select id="generatorType">
-        <option value="captions">Social captions & WhatsApp</option>
-        <option value="email">Professional email</option>
-        <option value="faq">Frequently asked questions (FAQ)</option>
-    </select>
+    <footer>
+        TOBOFU Event Communication Generator | Tri-City AI-Thon
+    </footer>
 
-    <button class="full" id="generateButton" type="button">
-        Generate with AI
-    </button>
+    <script>
+        const eventForm = document.getElementById("eventForm");
+        const generateButton = document.getElementById("generateButton");
+        const copyButton = document.getElementById("copyButton");
+        const aiResult = document.getElementById("aiResult");
+        const statusMessage = document.getElementById("statusMessage");
 
-    <div id="aiResult" class="result hidden"></div>
-</section>
-   </main>
+        const deliveryChannel = document.getElementById("deliveryChannel");
+        const emailRecipientGroup = document.getElementById("emailRecipientGroup");
+        const whatsappRecipientGroup = document.getElementById("whatsappRecipientGroup");
+        const recipientEmail = document.getElementById("recipientEmail");
+        const recipientPhone = document.getElementById("recipientPhone");
 
-<script>
-document.getElementById("generateButton").addEventListener("click", async function () {
-    const button = this;
-    const resultBox = document.getElementById("aiResult");
+        let generatedContent = "";
 
-    const eventName = document.getElementById("eventName").value.trim();
-    const eventDate = document.getElementById("eventDate").value;
-    const venue = document.getElementById("venue").value.trim();
-    const audience = document.getElementById("audience").value.trim();
-    const registration = document.getElementById("registration").value.trim();
-    const details = document.getElementById("details").value.trim();
-    const type = document.getElementById("generatorType").value;
+        function updateDeliveryFields() {
+            const isEmail = deliveryChannel.value === "email";
 
-    if (!eventName || !eventDate || !venue) {
-        resultBox.textContent = "Please enter the event name, date, and venue first.";
-        resultBox.classList.remove("hidden");
-        return;
-    }
+            emailRecipientGroup.classList.toggle("hidden", !isEmail);
+            whatsappRecipientGroup.classList.toggle("hidden", isEmail);
 
-    button.disabled = true;
-    button.textContent = "Generating...";
-    resultBox.textContent = "Please wait while AI creates your content...";
-    resultBox.classList.remove("hidden");
-
-    try {
-        const response = await fetch("/generate", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                eventName,
-                eventDate,
-                venue,
-                audience,
-                registration,
-                details,
-                type
-            })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || "Generation failed.");
+            recipientEmail.required = isEmail;
+            recipientPhone.required = !isEmail;
         }
 
-        resultBox.textContent = data.result || "No content returned.";
-    } catch (error) {
-        resultBox.textContent = "Error: " + error.message;
-    } finally {
-        button.disabled = false;
-        button.textContent = "Generate with AI";
-    }
-});
+        deliveryChannel.addEventListener("change", updateDeliveryFields);
+        updateDeliveryFields();
 
-document.getElementById("eventForm").addEventListener("submit", function (event) {
-    event.preventDefault();
+        function getEventDetails() {
+            return {
+                eventName: document.getElementById("eventName").value.trim(),
+                eventDate: document.getElementById("eventDate").value,
+                venue: document.getElementById("venue").value.trim(),
+                audience: document.getElementById("audience").value.trim(),
+                registration: document.getElementById("registration").value.trim(),
+                details: document.getElementById("details").value.trim()
+            };
+        }
 
-    const eventName = document.getElementById("eventName").value.trim();
-    const eventDate = document.getElementById("eventDate").value;
-    const venue = document.getElementById("venue").value.trim();
-    const audience = document.getElementById("audience").value.trim();
-    const registration = document.getElementById("registration").value.trim();
+        async function readResponse(response) {
+            let data;
 
-    document.getElementById("eventStatus").textContent =
-        "Event details entered successfully!";
-    document.getElementById("eventStatus").classList.remove("hidden");
+            try {
+                data = await response.json();
+            } catch {
+                throw new Error("The server returned an invalid response.");
+            }
 
-    document.getElementById("calendarPreview").textContent =
-        "Event: " + eventName +
-        "\nDate: " + eventDate +
-        "\nVenue: " + venue +
-        "\nAudience: " + (audience || "Not specified") +
-        "\nRegistration: " + (registration || "Not provided");
-});
-</script>
+            if (!response.ok) {
+                throw new Error(data.error || data.message || "The request failed.");
+            }
 
+            return data;
+        }
+
+        eventForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const eventDetails = getEventDetails();
+            const channel = deliveryChannel.value;
+            let type = document.getElementById("generatorType").value;
+
+            if (!eventDetails.eventName ||
+                !eventDetails.eventDate ||
+                !eventDetails.venue) {
+                statusMessage.textContent =
+                    "Please fill in the event name, date and venue.";
+                return;
+            }
+
+            if (channel === "email" && !recipientEmail.value.trim()) {
+                statusMessage.textContent =
+                    "Please enter the recipient email address.";
+                recipientEmail.focus();
+                return;
+            }
+
+            if (channel === "whatsapp") {
+                statusMessage.textContent =
+                    "WhatsApp sending is not connected yet. Your phone number has not been sent. " +
+                    "We need to configure the official WhatsApp Business Cloud API first.";
+                return;
+            }
+
+            // The current backend accepts captions, whatsapp, email and faq.
+            if (type === "whatsapp") {
+                type = "captions";
+            }
+
+            generateButton.disabled = true;
+            copyButton.disabled = true;
+            generateButton.textContent = "Generating and sending...";
+            aiResult.textContent = "Please wait while AI creates your content...";
+            statusMessage.textContent = "Step 1 of 2: Generating content with AI...";
+
+            try {
+                const generateResponse = await fetch("/generate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        ...eventDetails,
+                        type: type
+                    })
+                });
+
+                const generatedData = await readResponse(generateResponse);
+
+                generatedContent =
+                    generatedData.result || generatedData.content || "";
+
+                if (!generatedContent.trim()) {
+                    throw new Error("AI did not return any content.");
+                }
+
+                aiResult.textContent = generatedContent;
+                copyButton.disabled = false;
+
+                statusMessage.textContent =
+                    "Content generated. Step 2 of 2: Sending email...";
+
+                const emailResponse = await fetch("/send-email", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        email: recipientEmail.value.trim(),
+                        subject: "TOBOFU Event Notification: " + eventDetails.eventName,
+                        content: generatedContent
+                    })
+                });
+
+                const emailData = await readResponse(emailResponse);
+
+                statusMessage.textContent =
+                    "Content generated successfully. " +
+                    (emailData.message ||
+                     "Email request submitted. Check your inbox and Resend dashboard.");
+            } catch (error) {
+                statusMessage.textContent =
+                    "Notice: " + error.message +
+                    "\n\nIf the content was generated, it remains visible above. " +
+                    "Check the Flask terminal for details.";
+            } finally {
+                generateButton.disabled = false;
+                copyButton.disabled = false;
+                generateButton.textContent = "✨ Generate and Send";
+            }
+        });
+
+        copyButton.addEventListener("click", async function () {
+            const content = generatedContent.trim();
+
+            if (!content) {
+                statusMessage.textContent =
+                    "Generate some content before copying.";
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(content);
+                statusMessage.textContent =
+                    "Generated content copied to clipboard.";
+            } catch {
+                statusMessage.textContent =
+                    "Copy was blocked by the browser. Select the content and press Ctrl+C.";
+            }
+        });
+    </script>
 </body>
 </html>
